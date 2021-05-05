@@ -6,31 +6,31 @@ class SneakerNike extends HTMLElement {
         this.attachShadow({mode: "open"})
     }
     initializeAttr() {
-        this.Title = "";
-        this.imgSrc = "";
+        this.productTitle = "";
+        this.img = "";
         this.semiTitle = "";
         this.price = "";
+        this.brand = "";
     }
     getFormattedPrice() {
-        return this.price;
+        return `$${this.price}`;
     }
     createTemplate() {
         const template = document.createElement("template")
-        
         template.innerHTML=`
         <section class="product">
             <article class="product__info">
-                <h1>${this.Title}</h1>
+                <h1>${this.productTitle}</h1>
                 <h3>${this.semiTitle}</h3>
-                <p>informations or text Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam placeat similique, consectetur nostrum, facilis ea, pariatur fugit asperiores repellat nihil magnam totam eius voluptatem libero iste quas at. Porro, deleniti?</p>
+                <p><slot></slot></p>
                 <div class="product__info_action">
                     <span class="product__info--price">${this.getFormattedPrice()}</span>
                     <button>Buy Now</button>
                 </div>
             </article>
             <figure class="product__image">
-                <h1>Nike</h1>
-                <img src="${this.imgSrc}" alt="Imagen del producto">
+                <h1>${this.brand}</h1>
+                <img alt="Imagen del producto" src=${this.img} />
             </figure>
         </section>
 
@@ -42,6 +42,13 @@ class SneakerNike extends HTMLElement {
         const mainColor = "#a0a0a0"
         const mainBackground = "#3d4f99e2"
         const style = `<style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
         .product {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -126,7 +133,7 @@ class SneakerNike extends HTMLElement {
             .product {
                 height: auto;
                 grid-template-columns: 1fr;
-                grid-template-rows: 1fr 1fr;
+                grid-template-rows: auto auto;
                 grid-template-areas: "img"
                                      "info";
             }
@@ -146,8 +153,7 @@ class SneakerNike extends HTMLElement {
                 width: 80%;
                 transform: none;
                 top: auto;
-                bottom: 0;
-                right: 10%;
+                position: static;
             }
             .product__image h1{
                 font-size: 3.5em;
@@ -159,7 +165,7 @@ class SneakerNike extends HTMLElement {
         return style;
     }
     static get observedAttributes() {
-        return ["Title", "price", "imgSrc", "semiTitle"]
+        return ["product-title", "price", "img", "semi-title", "brand"]
     }
     connectedCallback() {
         const template = this.createTemplate()
@@ -169,18 +175,20 @@ class SneakerNike extends HTMLElement {
     attributeChangedCallback(attr, oldValue, newValue) {
         if(oldValue !== newValue) {
             switch(attr) {
-                case "Title":
-                    this.Title = newValue
+                case "product-title":
+                    this.productTitle = newValue
                     break;
                 case "price":
                     this.price = newValue
                     break;
-                case "imgSrc":
-                    this.imgSrc = newValue
+                case "img":
+                    this.img = newValue
                     break;
-                case "semiTitle":
+                case "semi-title":
                     this.semiTitle = newValue
                     break;
+                case "brand": 
+                    this.brand = newValue;
                 default:
                     break;
             }
